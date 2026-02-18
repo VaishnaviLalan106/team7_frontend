@@ -10,6 +10,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 const zones = [
     { id: 'resume', name: 'Resume Island', icon: ScrollText, path: '/resume-island', unlocked: true, completed: false },
+    { id: 'roadmap', name: 'Learning Roadmap', icon: BookOpen, path: '/roadmap', unlocked: true, completed: false },
     { id: 'concept', name: 'Concept Caverns', icon: BookOpen, path: '/concept-caverns', unlocked: true, completed: false },
     { id: 'arena', name: 'Interview Arena', icon: Users, path: '/interview-arena', unlocked: true, completed: false },
     { id: 'dungeon', name: 'Code Dungeon', icon: Code2, path: '/code-dungeon', unlocked: true, completed: false },
@@ -43,6 +44,7 @@ const Sidebar = () => {
                         {[
                             { name: 'World Map', path: '/', icon: MapIcon },
                             { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+                            { name: 'Learning Roadmap', path: '/roadmap', icon: BookOpen },
                             { name: 'Profile', path: '/profile', icon: User },
                         ].map((item) => (
                             <Link key={item.name} to={item.path}

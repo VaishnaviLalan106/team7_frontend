@@ -5,13 +5,13 @@ import AIChat from '../components/AIChat';
 import { Map as MapIcon, LayoutDashboard, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const MainLayout = ({ children, hideSidebar = false }) => {
+const MainLayout = ({ children, hideSidebar = false, hideNav = false }) => {
     return (
         <div className="min-h-screen flex flex-col bg-navy-deep text-white selection:bg-gold selection:text-gold">
-            <Navbar />
-            <div className="flex flex-1">
+            {!hideNav && <Navbar />}
+            <div className={`flex flex-1 ${hideNav ? 'pt-0' : ''}`}>
                 {!hideSidebar && <Sidebar />}
-                <main className={`flex-1 p-4 md:p-6 lg:p-8 pb-32 lg:pb-8 ${hideSidebar ? 'max-w-7xl mx-auto w-full' : ''}`}>
+                <main className={`flex-1 p-4 md:p-6 lg:p-8 pb-32 lg:pb-8 ${hideSidebar || hideNav ? 'max-w-7xl mx-auto w-full' : ''}`}>
                     {children}
                 </main>
             </div>

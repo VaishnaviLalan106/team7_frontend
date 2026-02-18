@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
     TrendingUp, Award, Clock, Zap, Target,
     BarChart3, Activity, Star, Calendar, ArrowUpRight,
-    Map, ScrollText, BookOpen, Users, Code2, Globe, Sparkles
+    Map, ScrollText, BookOpen, Users, Code2, Globe, Sparkles,
+    AlertTriangle, RefreshCw, Brain
 } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, LineChart, Line, BarChart, Bar } from 'recharts';
+import { getAnalytics } from '../services/apiService';
 
-const data = [
+const xpData = [
     { name: 'Mon', xp: 400 }, { name: 'Tue', xp: 700 }, { name: 'Wed', xp: 1200 },
     { name: 'Thu', xp: 900 }, { name: 'Fri', xp: 1500 }, { name: 'Sat', xp: 1800 },
     { name: 'Sun', xp: 2100 },
@@ -22,6 +24,12 @@ const skillData = [
 ];
 
 const Dashboard = () => {
+    const [analytics, setAnalytics] = useState(null);
+
+    useEffect(() => {
+        getAnalytics().then(setAnalytics);
+    }, []);
+
     return (
         <div className="space-y-8 pb-12">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 py-2">
@@ -40,9 +48,9 @@ const Dashboard = () => {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {[
                     { label: 'Total XP', val: '12,450', change: '+2.4k', icon: Zap, color: 'text-gold', bg: 'bg-gold/10' },
-                    { label: 'Expedition Rank', val: 'Offer Hunter', change: 'Top 5%', icon: Award, color: 'text-rose', bg: 'bg-rose/10' },
-                    { label: 'Focus Points', val: '342', change: '+12', icon: Target, color: 'text-grass', bg: 'bg-grass/10' },
-                    { label: 'Active Streak', val: '12 Days', change: 'Steady', icon: Activity, color: 'text-sky', bg: 'bg-sky/10' },
+                    { label: 'Tests Taken', val: analytics?.totalTests || '24', change: `Avg ${analytics?.avgScore || 78}%`, icon: Target, color: 'text-grass', bg: 'bg-grass/10' },
+                    { label: 'Active Streak', val: `${analytics?.streak || 5} Days`, change: 'On Fire', icon: Activity, color: 'text-rose', bg: 'bg-rose/10' },
+                    { label: 'This Week', val: analytics?.testsThisWeek || '4', change: 'Tests', icon: Brain, color: 'text-sky', bg: 'bg-sky/10' },
                 ].map((m, i) => (
                     <motion.div key={i} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.1 }}
                         className="glass-card flex flex-col items-center justify-center p-6 text-center"
@@ -76,7 +84,7 @@ const Dashboard = () => {
                     </div>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={data}>
+                            <AreaChart data={xpData}>
                                 <defs>
                                     <linearGradient id="colorXp" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#22C55E" stopOpacity={0.3} />
@@ -86,9 +94,7 @@ const Dashboard = () => {
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
                                 <XAxis dataKey="name" stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} />
                                 <YAxis stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => `${v / 1000}k`} />
-                                <Tooltip
-                                    contentStyle={{ background: 'rgba(30, 41, 59, 0.95)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', color: '#F1F5F9', fontSize: '12px', fontWeight: 'bold' }}
-                                />
+                                <Tooltip contentStyle={{ background: 'rgba(30, 41, 59, 0.95)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', color: '#F1F5F9', fontSize: '12px', fontWeight: 'bold' }} />
                                 <Area type="monotone" dataKey="xp" stroke="#22C55E" strokeWidth={3} fillOpacity={1} fill="url(#colorXp)" />
                             </AreaChart>
                         </ResponsiveContainer>
@@ -113,9 +119,102 @@ const Dashboard = () => {
                             </RadarChart>
                         </ResponsiveContainer>
                     </div>
-                    <p className="text-[11px] text-text-secondary mt-4 leading-relaxed font-bold italic">Gather more shards in <span className="text-sky">Concept Caverns</span> to broaden your soul essence.</p>
                 </motion.div>
             </div>
+
+            {/* ── AI ANALYTICS SECTION ── */}
+            {analytics && (
+                <div className="grid lg:grid-cols-3 gap-8">
+                    {/* Performance Trend */}
+                    <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.6 }}
+                        className="glass-card lg:col-span-2 p-8"
+                    >
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-lg font-black text-white flex items-center gap-2">
+                                <TrendingUp size={18} className="text-gold" /> Performance Trend
+                            </h3>
+                            <span className="text-[10px] text-text-muted uppercase tracking-wider">Last 6 weeks</span>
+                        </div>
+                        <div className="h-[200px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={analytics.performanceTrend}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
+                                    <XAxis dataKey="date" stroke="#64748B" fontSize={10} tickLine={false} axisLine={false} />
+                                    <YAxis stroke="#64748B" fontSize={10} tickLine={false} axisLine={false} domain={[0, 100]} />
+                                    <Tooltip contentStyle={{ background: 'rgba(30, 41, 59, 0.95)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', color: '#F1F5F9', fontSize: '11px', fontWeight: 'bold' }} />
+                                    <Line type="monotone" dataKey="score" stroke="#FBBF24" strokeWidth={3} dot={{ fill: '#FBBF24', r: 4 }} activeDot={{ r: 6, stroke: '#FBBF24', strokeWidth: 2, fill: '#0F172A' }} />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </motion.div>
+
+                    {/* Score Breakdown */}
+                    <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.7 }}
+                        className="glass-card p-8"
+                    >
+                        <h3 className="text-lg font-black text-white flex items-center gap-2 mb-6">
+                            <BarChart3 size={18} className="text-sky-400" /> Score Breakdown
+                        </h3>
+                        <div className="space-y-4">
+                            {analytics.scoreBreakdown.map((item) => (
+                                <div key={item.type}>
+                                    <div className="flex items-center justify-between mb-1.5">
+                                        <span className="text-xs font-bold text-white">{item.type}</span>
+                                        <span className="text-xs font-bold text-text-muted">{item.score}% ({item.total} tests)</span>
+                                    </div>
+                                    <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                                        <motion.div initial={{ width: 0 }} animate={{ width: `${item.score}%` }} transition={{ duration: 1, delay: 0.5 }}
+                                            className={`h-full rounded-full ${item.score >= 80 ? 'bg-emerald-400' : item.score >= 60 ? 'bg-gold' : 'bg-rose-400'}`} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+
+            {/* Weak Areas + Revision */}
+            {analytics && (
+                <div className="grid lg:grid-cols-2 gap-8">
+                    {/* Weak Areas */}
+                    <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.8 }}
+                        className="glass-card p-8"
+                    >
+                        <h3 className="text-lg font-black text-white flex items-center gap-2 mb-6">
+                            <AlertTriangle size={18} className="text-rose-400" /> Weak Areas
+                        </h3>
+                        <div className="space-y-3">
+                            {analytics.weakAreas.map((area, i) => (
+                                <div key={area} className="flex items-center gap-3 p-3 bg-rose-500/5 rounded-xl border border-rose-500/10">
+                                    <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-400 text-xs font-bold">{i + 1}</div>
+                                    <span className="text-sm font-bold text-white">{area}</span>
+                                    <span className="ml-auto text-[9px] font-bold text-rose-400 bg-rose-500/10 px-2 py-1 rounded uppercase">Needs work</span>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+
+                    {/* Revision Suggestions */}
+                    <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.9 }}
+                        className="glass-card p-8"
+                    >
+                        <h3 className="text-lg font-black text-white flex items-center gap-2 mb-6">
+                            <RefreshCw size={18} className="text-gold" /> Suggested Revisions
+                        </h3>
+                        <div className="space-y-3">
+                            {analytics.revisionTopics.map((topic, i) => (
+                                <div key={topic} className="flex items-center gap-3 p-3 bg-gold/5 rounded-xl border border-gold/10">
+                                    <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center">
+                                        <BookOpen size={14} className="text-gold" />
+                                    </div>
+                                    <span className="text-sm font-bold text-white">{topic}</span>
+                                    <span className="ml-auto text-[9px] font-bold text-gold bg-gold/10 px-2 py-1 rounded uppercase">Review</span>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+                </div>
+            )}
 
             <div className="grid lg:grid-cols-2 gap-8">
                 {/* Activity Feed */}

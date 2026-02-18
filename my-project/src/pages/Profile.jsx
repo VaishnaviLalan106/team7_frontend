@@ -1,11 +1,14 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     Trophy, Award, Zap, Star, Shield,
     ArrowRight, Sparkles, Map, Target,
     Settings, Edit3, Share2, Compass, Heart
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useUser } from '../context/UserContext';
+import AvatarEditor from '../components/AvatarEditor';
+import ShareModal from '../components/ShareModal';
 
 const data = [
     { name: 'Technical', score: 85 },
@@ -15,6 +18,10 @@ const data = [
 ];
 
 const Profile = () => {
+    const { user } = useUser();
+    const [showEditor, setShowEditor] = useState(false);
+    const [showShare, setShowShare] = useState(false);
+
     return (
         <div className="space-y-8 pb-12">
             {/* Achievement Profile Header */}
@@ -24,19 +31,19 @@ const Profile = () => {
                 <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/leaves.png')] animate-pulse"></div>
                 <div className="absolute top-0 right-[-50px] w-96 h-96 bg-gold/5 rounded-full blur-[80px]"></div>
 
-                <div className="relative group shrink-0">
+                <div className="relative group shrink-0 cursor-pointer" onClick={() => setShowEditor(true)}>
                     <div className="w-32 h-32 md:w-40 md:h-40 rounded-[3rem] bg-gradient-to-br from-sunlight to-gold p-1.5 shadow-2xl shadow-black/20 group-hover:scale-105 transition-transform rotate-6 group-hover:rotate-0">
-                        <div className="w-full h-full rounded-[2.5rem] overflow-hidden bg-navy border-4 border-navy flex items-center justify-center text-7xl">🦊</div>
+                        <div className="w-full h-full rounded-[2.5rem] overflow-hidden bg-navy border-4 border-navy flex items-center justify-center text-7xl">{user.avatar}</div>
                     </div>
-                    <div className="absolute -bottom-2 -right-2 bg-navy text-gold p-3 rounded-2xl shadow-xl flex items-center justify-center border-2 border-white/10">
+                    <div className="absolute -bottom-2 -right-2 bg-navy text-gold p-3 rounded-2xl shadow-xl flex items-center justify-center border-2 border-white/10 group-hover:bg-gold group-hover:text-navy transition-all">
                         <Edit3 size={18} />
                     </div>
                 </div>
 
                 <div className="text-center md:text-left flex-1 relative z-10">
                     <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 mb-4">
-                        <h1 className="text-4xl font-black italic tracking-tight underline decoration-sunlight decoration-4 underline-offset-4">Adventurer Profile</h1>
-                        <span className="px-5 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-xs font-black uppercase tracking-widest border border-white/30">Lvl 12 Elite Candidate</span>
+                        <h1 className="text-4xl font-black italic tracking-tight underline decoration-sunlight decoration-4 underline-offset-4">{user.displayName}</h1>
+                        <span className="px-5 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-xs font-black uppercase tracking-widest border border-white/30">Lvl 12 {user.title}</span>
                     </div>
                     <p className="text-white/80 font-bold text-lg mb-8 italic">"Seeking the ultimate career destiny through code, design, and spirit."</p>
 
@@ -51,8 +58,12 @@ const Profile = () => {
                 </div>
 
                 <div className="flex gap-3 relative z-10 self-start">
-                    <button className="p-3 bg-white/10 rounded-2xl border border-white/20 hover:bg-white/20 transition-all shadow-lg"><Share2 size={20} /></button>
-                    <button className="p-3 bg-white/10 rounded-2xl border border-white/20 hover:bg-white/20 transition-all shadow-lg"><Settings size={20} /></button>
+                    <button onClick={() => setShowShare(true)} className="p-3 bg-white/10 rounded-2xl border border-white/20 hover:bg-white/20 transition-all shadow-lg">
+                        <Share2 size={20} />
+                    </button>
+                    <button onClick={() => setShowEditor(true)} className="p-3 bg-white/10 rounded-2xl border border-white/20 hover:bg-white/20 transition-all shadow-lg">
+                        <Settings size={20} />
+                    </button>
                 </div>
             </motion.div>
 
@@ -143,6 +154,14 @@ const Profile = () => {
                 <p className="text-sm font-medium text-text-secondary italic mb-8">Exchange your earned XP for legendary portfolio skins and certified scrolls.</p>
                 <button className="btn-primary px-12 py-4 shadow-xl">Visit the Treasure Merchant</button>
             </div>
+
+            {/* Modals */}
+            <AnimatePresence>
+                {showEditor && <AvatarEditor onClose={() => setShowEditor(false)} />}
+            </AnimatePresence>
+            <AnimatePresence>
+                {showShare && <ShareModal onClose={() => setShowShare(false)} />}
+            </AnimatePresence>
         </div>
     );
 };

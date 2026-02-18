@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Lock, CheckCircle2, ChevronRight, Sparkles, Gift, Zap, X } from 'lucide-react';
+import { useUser } from '../context/UserContext';
 
 const zones = [
     {
@@ -9,6 +10,12 @@ const zones = [
         path: '/resume-island', progress: 85, unlocked: true, completed: false,
         gradient: 'from-emerald-400 to-green-600', xp: 200,
         icon: '📜', accent: '#22C55E',
+    },
+    {
+        id: 'roadmap', name: 'Learning Roadmap', subtitle: 'Chart your learning journey',
+        path: '/roadmap', progress: 40, unlocked: true, completed: false,
+        gradient: 'from-teal-400 to-cyan-600', xp: 250,
+        icon: '📚', accent: '#2DD4BF',
     },
     {
         id: 'concept', name: 'Concept Caverns', subtitle: 'Master the crystal chambers',
@@ -178,8 +185,9 @@ const IslandNode = ({ zone, index }) => {
     );
 };
 
-/* ── Explorer avatar (cute fox) ── */
+/* ── Explorer avatar (uses context) ── */
 const ExplorerAvatar = () => {
+    const { user } = useUser();
     const currentZoneIndex = [...zones].reverse().findIndex(z => z.progress > 0 && z.unlocked);
     const activeIndex = currentZoneIndex >= 0 ? zones.length - 1 - currentZoneIndex : 0;
 
@@ -194,7 +202,7 @@ const ExplorerAvatar = () => {
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         >
             <div className="relative">
-                <span className="text-3xl block filter drop-shadow-[0_0_12px_rgba(255,215,0,0.5)]">🦊</span>
+                <span className="text-3xl block filter drop-shadow-[0_0_12px_rgba(255,215,0,0.5)]">{user.avatar}</span>
                 <motion.div
                     className="absolute -top-1 -right-1 w-3 h-3 bg-gold rounded-full"
                     animate={{ scale: [1, 1.5, 1], opacity: [1, 0.3, 1] }}
