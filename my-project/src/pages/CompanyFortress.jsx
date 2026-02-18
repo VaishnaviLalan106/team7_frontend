@@ -1,105 +1,65 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Castle, Zap, Trophy, Shield, ChevronRight, ArrowLeft, CheckCircle2, XCircle, RotateCcw, Sparkles } from 'lucide-react';
+import { Globe, Zap, Trophy, CheckCircle2, ArrowLeft, ArrowRight, Sparkles, Building2, Landmark, Rocket, Users } from 'lucide-react';
 
 const companies = [
-    {
-        id: 'faang', name: '🏰 FAANG Tower', desc: 'Google, Amazon, Meta, Apple, Netflix — elite interview prep', xp: 500, color: 'from-gold to-amber',
-        questions: [
-            { q: 'Design a URL shortener system.', options: ['Hash-based key generation', 'Sequential IDs', 'Random names', 'Manual entry'], answer: 0 },
-            { q: 'What is eventual consistency?', options: ['Data syncs eventually across nodes', 'Data is always consistent', 'No consistency', 'Real-time sync'], answer: 0 },
-        ]
-    },
-    {
-        id: 'startup', name: '🚀 Startup Hub', desc: 'Fast-paced, product-focused interview rounds', xp: 350, color: 'from-emerald to-teal-400',
-        questions: [
-            { q: 'How would you prioritize features for an MVP?', options: ['User impact vs effort matrix', 'Build everything', 'Random selection', 'CEO decides all'], answer: 0 },
-            { q: 'Describe your approach to rapid prototyping.', options: ['Build, test, iterate quickly', 'Spend months planning', 'Copy competitors', 'Skip testing'], answer: 0 },
-        ]
-    },
-    {
-        id: 'service', name: '🏢 Service Castle', desc: 'TCS, Infosys, Wipro — structured interview format', xp: 300, color: 'from-purple to-violet-400',
-        questions: [
-            { q: 'What is the SDLC?', options: ['Software Development Life Cycle', 'System Data Logic Controller', 'Server Deployment Log', 'Static Design Layout'], answer: 0 },
-            { q: 'Explain client-server architecture.', options: ['Client requests, server responds', 'Both are servers', 'Client only', 'No interaction'], answer: 0 },
-        ]
-    },
+    { id: 'faang', name: '🏰 FAANG Fortress', desc: 'Conquer the algorithmic giants of the grand valley', xp: 500, icon: '🏛' },
+    { id: 'startup', name: '🚀 Unicorn Woods', desc: 'Fast-paced challenges in the magical land of startups', xp: 400, icon: '🦄' },
+    { id: 'service', name: '🏢 Enterprise Estate', desc: 'Master the scaling towers of global service leaders', xp: 300, icon: '🏗' },
 ];
 
 const CompanyFortress = () => {
     const [active, setActive] = useState(null);
-    const [currentQ, setCurrentQ] = useState(0);
-    const [answers, setAnswers] = useState({});
-    const [done, setDone] = useState(false);
+    const [step, setStep] = useState(0);
 
-    const company = active !== null ? companies[active] : null;
-    const qs = company?.questions || [];
+    const interviewSteps = [
+        { q: "What's the time complexity of searching a value in a binary search tree?", options: ["O(log n)", "O(n)", "O(1)", "O(n log n)"], answer: 0 },
+        { q: "How would you handle a conflict with a team member?", options: ["Discuss openly to find common ground", "Report to manager immediately", "Ignore it", "Write a stern email"], answer: 0 },
+    ];
 
-    const handleAnswer = (idx) => {
-        setAnswers({ ...answers, [currentQ]: idx });
-    };
-
-    const calcScore = () => {
-        let c = 0;
-        qs.forEach((q, i) => { if (answers[i] === q.answer) c++; });
-        return c;
-    };
-
-    if (done && company) {
-        const score = calcScore();
+    if (active) {
+        const company = companies.find(c => c.id === active);
+        const q = interviewSteps[step];
         return (
-            <div className="max-w-lg mx-auto py-16">
-                <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="glass-card text-center">
-                    <div className="text-5xl mb-4">{score === qs.length ? '🏰' : '🛡️'}</div>
-                    <h2 className="text-2xl font-black mb-2">{score === qs.length ? 'Fortress Conquered!' : 'Good Fight!'}</h2>
-                    <p className="text-text-secondary text-sm mb-4">{score}/{qs.length} correct at {company.name.split(' ').slice(1).join(' ')}</p>
-                    <div className="flex items-center justify-center gap-3 mb-6">
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-gold/10 rounded-lg text-xs font-bold text-gold"><Zap size={12} /> +{score * 100} XP</span>
-                        {score === qs.length && <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-purple/10 rounded-lg text-xs font-bold text-purple"><Trophy size={12} /> Fortress Guard</span>}
+            <div className="max-w-3xl mx-auto space-y-8 px-4 pb-12">
+                <button onClick={() => { setActive(null); setStep(0); }} className="flex items-center gap-2 text-white hover:text-rose transition-colors text-sm font-black uppercase tracking-widest"><ArrowLeft size={18} /> Exit Grounds</button>
+
+                <div className="glass-card p-10 md:p-14 border-emerald-100 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-12 opacity-5 text-8xl">{company.icon}</div>
+
+                    <div className="flex items-center justify-between mb-10">
+                        <div>
+                            <span className="text-[10px] font-black text-emerald-600 bg-grass/10 border border-emerald-100 px-4 py-1.5 rounded-full uppercase tracking-widest">Company Quest</span>
+                            <h3 className="text-2xl font-black text-white mt-4">{company.name}</h3>
+                        </div>
+                        <div className="text-right">
+                            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Stage</span>
+                            <div className="text-3xl font-black text-white">{step + 1}<span className="text-white/30">/</span>3</div>
+                        </div>
                     </div>
-                    <div className="space-y-2 text-left mb-6">
-                        {qs.map((q, i) => (
-                            <div key={i} className={`flex items-center gap-3 p-3 rounded-lg border ${answers[i] === q.answer ? 'border-emerald/20 bg-emerald/5' : 'border-red-500/20 bg-red-500/5'}`}>
-                                {answers[i] === q.answer ? <CheckCircle2 size={16} className="text-emerald flex-shrink-0" /> : <XCircle size={16} className="text-red-400 flex-shrink-0" />}
-                                <span className="text-sm truncate">{q.q}</span>
-                            </div>
+
+                    <div className="bg-white/5 p-10 rounded-[2.5rem] border-2 border-white mb-10 text-center relative z-10">
+                        <p className="text-2xl font-black text-white leading-tight">"{q.q}"</p>
+                    </div>
+
+                    <div className="grid gap-4">
+                        {q.options.map((opt, i) => (
+                            <button key={i} onClick={() => setStep(s => Math.min(s + 1, 2))}
+                                className="w-full text-left px-8 py-5 rounded-2xl border-2 border-white/10 bg-white/5 hover:border-emerald-300 hover:bg-white/10 text-text-secondary hover:text-white font-bold transition-all flex items-center gap-5 group"
+                            >
+                                <div className="w-10 h-10 rounded-xl bg-white/10 text-white/50 group-hover:bg-emerald-100 group-hover:text-emerald-600 flex items-center justify-center font-black transition-all shadow-sm">{i + 1}</div>
+                                {opt}
+                            </button>
                         ))}
                     </div>
-                    <div className="flex gap-3 justify-center">
-                        <button onClick={() => { setActive(null); setCurrentQ(0); setAnswers({}); setDone(false); }} className="btn-primary flex items-center gap-2"><RotateCcw size={14} /> Again</button>
-                        <button onClick={() => { setActive(null); setDone(false); setCurrentQ(0); setAnswers({}); }} className="btn-ghost">All Fortresses</button>
-                    </div>
-                </motion.div>
-            </div>
-        );
-    }
 
-    if (company) {
-        const q = qs[currentQ];
-        return (
-            <div className="max-w-2xl mx-auto space-y-6">
-                <button onClick={() => { setActive(null); setCurrentQ(0); setAnswers({}); }} className="flex items-center gap-2 text-text-secondary hover:text-text-primary text-sm font-medium"><ArrowLeft size={16} /> Back</button>
-                <div className="glass-card">
-                    <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-bold text-purple bg-purple/10 px-2.5 py-1 rounded-md">{company.name}</span>
-                        <span className="text-xs font-bold text-text-muted">Q{currentQ + 1}/{qs.length}</span>
-                    </div>
-                    <div className="w-full bg-navy h-1.5 rounded-full mb-6 overflow-hidden">
-                        <motion.div animate={{ width: `${((currentQ + 1) / qs.length) * 100}%` }} className="h-full bg-gradient-to-r from-gold to-purple rounded-full" />
-                    </div>
-                    <p className="text-lg font-semibold mb-6">{q.q}</p>
-                    <div className="space-y-3">
-                        {q.options.map((opt, idx) => (
-                            <button key={idx} onClick={() => handleAnswer(idx)}
-                                className={`w-full text-left px-5 py-4 rounded-xl border text-sm font-medium transition-all ${answers[currentQ] === idx ? 'border-gold bg-gold/10 text-gold' : 'border-border hover:border-gold/20 hover:bg-surface-hover text-text-secondary'}`}
-                            >{opt}</button>
-                        ))}
-                    </div>
-                    <div className="flex justify-end mt-8">
-                        {currentQ < qs.length - 1 ? (
-                            <button onClick={() => setCurrentQ(currentQ + 1)} className="btn-primary">Next</button>
+                    <div className="mt-12 flex justify-end">
+                        {step < 1 ? (
+                            <button onClick={() => setStep(step + 1)} className="btn-primary px-12 italic">Next Trial</button>
                         ) : (
-                            <button onClick={() => setDone(true)} className="btn-primary flex items-center gap-1"><Sparkles size={16} /> Submit</button>
+                            <button onClick={() => { setActive(null); setStep(0); }} className="btn-primary px-16 bg-gradient-to-r from-sunlight to-gold text-gold shadow-gold/20">
+                                <Sparkles size={20} className="animate-pulse" /> Complete Conquest
+                            </button>
                         )}
                     </div>
                 </div>
@@ -108,24 +68,36 @@ const CompanyFortress = () => {
     }
 
     return (
-        <div className="space-y-6">
-            <div>
-                <div className="flex items-center gap-2 mb-1"><span className="text-2xl">🏰</span><h1 className="text-2xl font-black">Company Fortress</h1></div>
-                <p className="text-text-secondary text-sm">Choose your fortress. Face company-specific interview challenges.</p>
+        <div className="space-y-8 pb-12">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+                            <Globe size={24} />
+                        </div>
+                        <h1 className="text-3xl font-black text-white">Company Fortress</h1>
+                    </div>
+                    <p className="text-text-secondary font-medium pl-1">Infiltrate the high towers of industry giants.</p>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 bg-sunlight/10 border border-sunlight/30 rounded-2xl">
+                    <Zap size={16} className="text-gold fill-gold" />
+                    <span className="text-xs font-black text-gold uppercase tracking-widest">Potential: +500 XP</span>
+                </div>
             </div>
-            <div className="grid md:grid-cols-3 gap-5">
+
+            <div className="grid md:grid-cols-3 gap-8">
                 {companies.map((c, i) => (
                     <motion.button key={c.id} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.1 }}
-                        onClick={() => { setActive(i); setCurrentQ(0); setAnswers({}); setDone(false); }}
-                        className="glass-card-hover text-left group relative overflow-hidden"
+                        onClick={() => setActive(c.id)}
+                        className="glass-card-hover text-left group flex flex-col items-center justify-center text-center p-12 border-white/10"
                     >
-                        <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${c.color}`}></div>
-                        <div className="text-3xl mb-3">{c.name.split(' ')[0]}</div>
-                        <h3 className="text-lg font-bold group-hover:text-gold transition-colors mb-1">{c.name.split(' ').slice(1).join(' ')}</h3>
-                        <p className="text-sm text-text-secondary mb-4">{c.desc}</p>
-                        <div className="flex items-center justify-between text-xs font-bold text-text-muted">
-                            <span>{c.questions.length} Questions</span>
-                            <span className="text-gold flex items-center gap-1"><Zap size={12} /> +{c.xp} XP</span>
+                        <div className="text-7xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform filter drop-shadow-md">{c.icon}</div>
+                        <h3 className="text-2xl font-black text-white mb-3 leading-tight">{c.name}</h3>
+                        <p className="text-sm font-medium text-text-secondary mb-10 italic">{c.desc}</p>
+
+                        <div className="w-full pt-8 border-t border-white/5 flex items-center justify-between">
+                            <span className="text-[10px] font-black text-grass bg-grass/10 px-3 py-1.5 rounded-xl uppercase tracking-widest">Mock Trial</span>
+                            <span className="text-xs font-black text-gold flex items-center gap-1.5"><Zap size={12} className="fill-gold" /> +{c.xp} XP</span>
                         </div>
                     </motion.button>
                 ))}

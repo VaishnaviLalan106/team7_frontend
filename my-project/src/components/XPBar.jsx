@@ -1,41 +1,48 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Flame, Zap, Trophy } from 'lucide-react';
+import { Compass, Flame, Shield, Zap, Sparkles, ChevronRight, Trophy } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-const ranks = ['Explorer', 'Strategist', 'Challenger', 'Elite Candidate', 'Offer Hunter'];
+const XPBar = () => {
+    const stats = {
+        level: 8,
+        xp: 2450,
+        nextXp: 3000,
+        streak: 5,
+        rank: 'Elite Adventurer'
+    };
 
-const XPBar = ({ xp = 2450, streak = 5, level = 8 }) => {
-    const maxXP = level * 500;
-    const pct = Math.min((xp % 500) / 500 * 100, 100);
-    const rank = ranks[Math.min(Math.floor(level / 2), ranks.length - 1)];
+    const progress = (stats.xp / stats.nextXp) * 100;
 
     return (
-        <div className="flex items-center gap-3">
-            {/* Streak */}
-            <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-amber/10 border border-amber/20">
-                <Flame size={14} className="text-amber" />
-                <span className="text-xs font-bold text-amber">{streak}</span>
+        <div className="flex items-center gap-4 lg:gap-6 bg-white/5 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10">
+            <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-gold/10 border border-gold/20 rounded-xl">
+                <Flame size={14} className="text-gold fill-gold" />
+                <span className="text-xs font-black text-gold uppercase tracking-widest">{stats.streak} DAYS</span>
             </div>
 
-            {/* XP + Level */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gold/10 border border-gold/20">
-                <Zap size={14} className="text-gold" />
-                <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-gold leading-none">{xp} XP</span>
-                    <div className="w-16 h-1 bg-navy rounded-full mt-1 overflow-hidden">
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${pct}%` }}
-                            className="h-full bg-gold rounded-full"
-                        />
+            <div className="flex flex-col gap-1 min-w-[120px] lg:min-w-[180px]">
+                <div className="flex justify-between items-center px-1">
+                    <div className="flex items-center gap-1.5">
+                        <Sparkles size={12} className="text-gold" />
+                        <span className="text-[10px] font-black text-white/80 uppercase tracking-tighter">LVL {stats.level} • {stats.rank}</span>
                     </div>
+                    <span className="text-[9px] font-black text-text-muted">{stats.xp} / {stats.nextXp} XP</span>
+                </div>
+                <div className="h-2.5 bg-white/10 rounded-full overflow-hidden border border-white/5 p-[1px]">
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${progress}%` }}
+                        transition={{ duration: 1, ease: 'easeOut' }}
+                        className="h-full bg-gradient-to-r from-grass to-gold rounded-full relative"
+                    >
+                        <div className="absolute inset-0 bg-white/30 opacity-30"></div>
+                    </motion.div>
                 </div>
             </div>
 
-            {/* Rank */}
-            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-purple/10 border border-purple/20">
-                <Trophy size={14} className="text-purple" />
-                <span className="text-[10px] font-bold text-purple">{rank}</span>
+            <div className="hidden lg:flex items-center gap-2 group cursor-help">
+                <div className="w-8 h-8 rounded-xl bg-gold/10 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-navy-deep transition-all">
+                    <Trophy size={16} />
+                </div>
             </div>
         </div>
     );

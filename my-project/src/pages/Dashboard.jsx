@@ -1,114 +1,184 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, Flame, Trophy, Target, Zap, CheckCircle2, Sparkles } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import {
+    TrendingUp, Award, Clock, Zap, Target,
+    BarChart3, Activity, Star, Calendar, ArrowUpRight,
+    Map, ScrollText, BookOpen, Users, Code2, Globe, Sparkles
+} from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar } from 'recharts';
 
-const weeklyData = [
-    { day: 'Mon', score: 65 }, { day: 'Tue', score: 72 }, { day: 'Wed', score: 68 },
-    { day: 'Thu', score: 80 }, { day: 'Fri', score: 75 }, { day: 'Sat', score: 88 }, { day: 'Sun', score: 82 },
+const data = [
+    { name: 'Mon', xp: 400 }, { name: 'Tue', xp: 700 }, { name: 'Wed', xp: 1200 },
+    { name: 'Thu', xp: 900 }, { name: 'Fri', xp: 1500 }, { name: 'Sat', xp: 1800 },
+    { name: 'Sun', xp: 2100 },
 ];
 
-const heatmapData = [
-    { skill: 'React', level: 85, color: 'from-emerald to-teal-400' },
-    { skill: 'Node.js', level: 72, color: 'from-purple to-violet-400' },
-    { skill: 'SQL', level: 55, color: 'from-gold to-amber' },
-    { skill: 'DSA', level: 40, color: 'from-coral to-red-400' },
-    { skill: 'System Design', level: 30, color: 'from-blue-400 to-cyan-400' },
-];
-
-const activity = [
-    { action: 'Cleared Concept Caverns', xp: '+150 XP', time: '2h ago', icon: '🧠' },
-    { action: 'Resume forged on Island', xp: '+200 XP', time: '5h ago', icon: '🏝' },
-    { action: 'Arena Round 1 won', xp: '+200 XP', time: '1d ago', icon: '⚔️' },
-    { action: 'Code Dungeon puzzle solved', xp: '+100 XP', time: '2d ago', icon: '🧩' },
-];
-
-const badges = [
-    { name: 'Scroll Forger', icon: '📜' }, { name: 'Crystal Hunter', icon: '💎' },
-    { name: 'Arena Fighter', icon: '⚔️' }, { name: 'Code Explorer', icon: '🧩' },
+const skillData = [
+    { subject: 'Technical', A: 120, fullMark: 150 },
+    { subject: 'Logic', A: 98, fullMark: 150 },
+    { subject: 'Design', A: 86, fullMark: 150 },
+    { subject: 'Speed', A: 99, fullMark: 150 },
+    { subject: 'Soft Skills', A: 85, fullMark: 150 },
 ];
 
 const Dashboard = () => {
-    const metrics = [
-        { label: 'Resume Match', value: '78%', icon: Target, color: 'text-gold', bg: 'bg-gold/10', border: 'border-gold/20' },
-        { label: 'Total XP', value: '2,450', icon: Trophy, color: 'text-purple', bg: 'bg-purple/10', border: 'border-purple/20' },
-        { label: 'Day Streak', value: '5', icon: Flame, color: 'text-amber', bg: 'bg-amber/10', border: 'border-amber/20' },
-        { label: 'Offer Ready', value: '62%', icon: TrendingUp, color: 'text-emerald', bg: 'bg-emerald/10', border: 'border-emerald/20' },
-    ];
-
     return (
-        <div className="space-y-6">
-            <div><h1 className="text-2xl font-black mb-1">Dashboard</h1><p className="text-text-secondary text-sm">Your career adventure analytics.</p></div>
+        <div className="space-y-8 pb-12">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 py-2">
+                <div>
+                    <h1 className="text-4xl font-black text-white">Expedition <span className="text-gold">Analytics</span></h1>
+                    <p className="text-text-secondary font-medium mt-1">Proof of your journey across the destiny islands.</p>
+                </div>
+                <div className="flex gap-2">
+                    <button className="btn-secondary px-6 text-sm flex items-center gap-2">
+                        <Calendar size={18} /> Weekly Bounty
+                    </button>
+                </div>
+            </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {metrics.map((m, i) => (
-                    <motion.div key={i} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.08 }}
-                        className={`glass-card ${m.border} border`}
+            {/* Quick Metrics */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                {[
+                    { label: 'Total XP', val: '12,450', change: '+2.4k', icon: Zap, color: 'text-gold', bg: 'bg-gold/10' },
+                    { label: 'Expedition Rank', val: 'Offer Hunter', change: 'Top 5%', icon: Award, color: 'text-rose', bg: 'bg-rose/10' },
+                    { label: 'Focus Points', val: '342', change: '+12', icon: Target, color: 'text-grass', bg: 'bg-grass/10' },
+                    { label: 'Active Streak', val: '12 Days', change: 'Steady', icon: Activity, color: 'text-sky', bg: 'bg-sky/10' },
+                ].map((m, i) => (
+                    <motion.div key={i} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.1 }}
+                        className="glass-card flex flex-col items-center justify-center p-6 text-center"
                     >
-                        <div className={`w-10 h-10 rounded-xl ${m.bg} flex items-center justify-center ${m.color} mb-4`}><m.icon size={20} /></div>
-                        <div className="text-2xl font-black mb-0.5">{m.value}</div>
-                        <div className="text-xs text-text-muted font-semibold">{m.label}</div>
+                        <div className={`w-12 h-12 rounded-2xl ${m.bg} flex items-center justify-center mb-4 ${m.color}`}>
+                            <m.icon size={24} />
+                        </div>
+                        <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-1">{m.label}</p>
+                        <h3 className="text-2xl font-black text-white leading-none mb-2">{m.val}</h3>
+                        <span className="text-[10px] font-black text-grass px-2 py-0.5 bg-grass/10 rounded-full">{m.change}</span>
                     </motion.div>
                 ))}
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-6">
-                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} className="lg:col-span-2 glass-card">
-                    <h3 className="font-bold text-lg mb-4">Weekly Performance</h3>
-                    <ResponsiveContainer width="100%" height={220}>
-                        <AreaChart data={weeklyData}>
-                            <defs>
-                                <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#FBBF24" stopOpacity={0.3} />
-                                    <stop offset="100%" stopColor="#FBBF24" stopOpacity={0} />
-                                </linearGradient>
-                            </defs>
-                            <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} />
-                            <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} />
-                            <Tooltip contentStyle={{ background: '#1E293B', border: '1px solid #334155', borderRadius: '12px', color: '#F1F5F9', fontSize: '12px' }} />
-                            <Area type="monotone" dataKey="score" stroke="#FBBF24" strokeWidth={2.5} fill="url(#colorScore)" />
-                        </AreaChart>
-                    </ResponsiveContainer>
+            <div className="grid lg:grid-cols-3 gap-8">
+                {/* Performance Chart */}
+                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}
+                    className="glass-card lg:col-span-2 p-8 relative overflow-hidden"
+                >
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 className="text-xl font-black text-white flex items-center gap-2">
+                                <TrendingUp size={22} className="text-grass" /> Growth Trajectory
+                            </h3>
+                            <p className="text-xs font-medium text-text-secondary italic">XP gathered during recent island raids</p>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                            <span className="w-3 h-3 rounded-full bg-grass shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>
+                            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest leading-none">Forest XP</span>
+                        </div>
+                    </div>
+                    <div className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={data}>
+                                <defs>
+                                    <linearGradient id="colorXp" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#22C55E" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#22C55E" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
+                                <XAxis dataKey="name" stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} />
+                                <YAxis stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => `${v / 1000}k`} />
+                                <Tooltip
+                                    contentStyle={{ background: 'rgba(30, 41, 59, 0.95)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', color: '#F1F5F9', fontSize: '12px', fontWeight: 'bold' }}
+                                />
+                                <Area type="monotone" dataKey="xp" stroke="#22C55E" strokeWidth={3} fillOpacity={1} fill="url(#colorXp)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
                 </motion.div>
 
-                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }} className="glass-card">
-                    <h3 className="font-bold text-lg mb-4">Badges Earned</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                        {badges.map((b, i) => (
-                            <div key={i} className="flex flex-col items-center gap-2 p-3 bg-navy rounded-xl border border-border/30">
-                                <span className="text-2xl">{b.icon}</span>
-                                <span className="text-[10px] font-bold text-text-muted text-center">{b.name}</span>
-                            </div>
-                        ))}
+                {/* Skill Map */}
+                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }}
+                    className="glass-card p-8 flex flex-col justify-center items-center text-center relative overflow-hidden"
+                >
+                    <div className="absolute top-0 left-0 p-6 opacity-10 rotate-12 text-6xl">💎</div>
+                    <div className="mb-6">
+                        <h3 className="text-xl font-black text-white">Soul Essence</h3>
+                        <p className="text-xs font-black text-grass uppercase tracking-wider">Skill Potential Radar</p>
                     </div>
+                    <div className="h-[280px] w-full flex items-center justify-center">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={skillData}>
+                                <PolarGrid stroke="rgba(255,255,255,0.1)" />
+                                <PolarAngleAxis dataKey="subject" tick={{ fill: '#94A3B8', fontSize: 10, fontWeight: 'bold' }} />
+                                <Radar name="Skills" dataKey="A" stroke="#22C55E" strokeWidth={3} fill="#22C55E" fillOpacity={0.3} />
+                            </RadarChart>
+                        </ResponsiveContainer>
+                    </div>
+                    <p className="text-[11px] text-text-secondary mt-4 leading-relaxed font-bold italic">Gather more shards in <span className="text-sky">Concept Caverns</span> to broaden your soul essence.</p>
                 </motion.div>
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-6">
-                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }} className="glass-card">
-                    <h3 className="font-bold text-lg mb-5">Skill Heatmap</h3>
-                    <div className="space-y-4">
-                        {heatmapData.map((s, i) => (
-                            <div key={i}>
-                                <div className="flex justify-between text-sm mb-1"><span className="font-semibold">{s.skill}</span><span className="text-text-muted font-bold">{s.level}%</span></div>
-                                <div className="w-full bg-navy h-2.5 rounded-full overflow-hidden">
-                                    <motion.div initial={{ width: 0 }} animate={{ width: `${s.level}%` }} transition={{ duration: 1, delay: 0.3 + i * 0.1 }} className={`h-full bg-gradient-to-r ${s.color} rounded-full`} />
+            <div className="grid lg:grid-cols-2 gap-8">
+                {/* Activity Feed */}
+                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.6 }}
+                    className="glass-card p-8"
+                >
+                    <div className="flex items-center justify-between mb-8">
+                        <h3 className="text-xl font-black text-white flex items-center gap-3">
+                            <Activity size={22} className="text-rose" /> Expedition Log
+                        </h3>
+                        <button className="text-[10px] font-black text-gold uppercase tracking-widest hover:underline">View All</button>
+                    </div>
+                    <div className="space-y-6">
+                        {[
+                            { action: 'Slayed People Dragon', zone: 'Interview Arena', time: '2h ago', xp: 400, icon: <Users size={16} />, color: 'bg-rose text-white' },
+                            { action: 'Forged Clarity Scroll', zone: 'Resume Island', time: '5h ago', xp: 200, icon: <ScrollText size={16} />, color: 'bg-grass text-white' },
+                            { action: 'Gathered Concept Shard', zone: 'Concept Caverns', time: 'Yesterday', xp: 300, icon: <BookOpen size={16} />, color: 'bg-sky text-white' },
+                            { action: 'Deciphered Login Rune', zone: 'Code Dungeon', time: '2 days ago', xp: 150, icon: <Code2 size={16} />, color: 'bg-amber text-white' },
+                        ].map((log, i) => (
+                            <div key={i} className="flex items-center gap-4 group">
+                                <div className={`w-10 h-10 rounded-2xl ${log.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                                    {log.icon}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h4 className="text-sm font-black text-white leading-tight truncate">{log.action}</h4>
+                                    <p className="text-[10px] font-black text-grass uppercase tracking-tighter mt-0.5">{log.zone} • <span className="text-text-muted">{log.time}</span></p>
+                                </div>
+                                <div className="text-right">
+                                    <span className="text-[11px] font-black text-gold bg-gold/10 border border-gold/20 px-2 py-1 rounded-lg">+{log.xp} XP</span>
                                 </div>
                             </div>
                         ))}
                     </div>
                 </motion.div>
 
-                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.6 }} className="glass-card">
-                    <h3 className="font-bold text-lg mb-5">Recent Activity</h3>
-                    <div className="space-y-4">
-                        {activity.map((a, i) => (
-                            <div key={i} className="flex items-center gap-4 py-2 border-b border-border/20 last:border-0">
-                                <span className="text-xl">{a.icon}</span>
-                                <div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">{a.action}</p><p className="text-xs text-text-muted">{a.time}</p></div>
-                                <span className="text-xs font-bold text-gold bg-gold/10 px-2 py-1 rounded-md whitespace-nowrap">{a.xp}</span>
+                {/* Badges Cabinet */}
+                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.7 }}
+                    className="glass-card p-8"
+                >
+                    <div className="flex items-center justify-between mb-8">
+                        <h3 className="text-xl font-black text-white flex items-center gap-3">
+                            <Star size={22} className="text-gold" /> Hall of Honor
+                        </h3>
+                        <button className="text-[10px] font-black text-gold uppercase tracking-widest hover:underline">Exchanges</button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        {[
+                            { name: 'Scroll Forge', desc: 'Resume Hero', icon: '📜', color: 'bg-grass/10' },
+                            { name: 'Crystal Eye', desc: 'Concept Master', icon: '💎', color: 'bg-sky/10' },
+                            { name: 'Dragon Bane', desc: 'Mock Slayer', icon: '🐉', color: 'bg-rose/10' },
+                            { name: 'Rune King', desc: 'Code Master', icon: '🧩', color: 'bg-gold/10' },
+                        ].map((badge, i) => (
+                            <div key={i} className="p-5 rounded-3xl border border-white/10 flex items-center gap-4 hover:border-gold/30 hover:bg-white/5 transition-all group">
+                                <div className="text-3xl group-hover:scale-110 transition-transform">{badge.icon}</div>
+                                <div className="text-left">
+                                    <h4 className="text-xs font-black text-white leading-none mb-1">{badge.name}</h4>
+                                    <p className="text-[10px] font-black text-grass uppercase tracking-tighter">{badge.desc}</p>
+                                </div>
                             </div>
                         ))}
+                    </div>
+                    <div className="mt-10 p-4 bg-gold/10 border-2 border-gold/20 rounded-2xl flex items-center justify-center gap-4 text-gold font-black text-sm">
+                        <Sparkles size={20} className="animate-pulse" /> Complete FAANG Fortress to unlock the Elite Hall
                     </div>
                 </motion.div>
             </div>

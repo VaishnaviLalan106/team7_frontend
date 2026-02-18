@@ -1,113 +1,134 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Crown, Target, TrendingUp, Trophy, Zap, Shield, Lock, CheckCircle2 } from 'lucide-react';
+import { Trophy, CheckCircle2, Star, Sparkles, Shield, Zap, TrendingUp, Radar, Crown, ArrowRight, Heart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const FinalTemple = () => {
-    const readiness = 62;
-    const confidence = 72;
-    const skillsReady = readiness >= 70;
-    const mockReady = confidence >= 70;
-    const streakReady = true;
-    const allReady = skillsReady && mockReady && streakReady;
+    const requirements = [
+        { label: 'Resume Island Mastery', icon: <CheckCircle2 className="text-grass" />, done: true },
+        { label: 'Concept Shard Collection', icon: <CheckCircle2 className="text-grass" />, done: true },
+        { label: 'Interview Arena Slays', icon: <Star className="text-gold" />, done: true },
+        { label: 'Code Dungeon Runes', icon: <Star className="text-gold" />, done: false },
+    ];
 
     const skills = [
-        { name: 'React', score: 85 }, { name: 'Node.js', score: 72 },
-        { name: 'SQL', score: 55 }, { name: 'DSA', score: 40 },
-        { name: 'System Design', score: 30 }, { name: 'Behavioral', score: 68 },
+        { name: 'Core Strength', val: 85, color: 'bg-grass' },
+        { name: 'Mock Combat', val: 72, color: 'bg-sky' },
+        { name: 'Spirit/Behavioral', val: 90, color: 'bg-rose' },
+        { name: 'XP Level', val: 65, color: 'bg-gold' },
     ];
 
     return (
-        <div className="space-y-6">
-            <div>
-                <div className="flex items-center gap-2 mb-1"><span className="text-2xl">👑</span><h1 className="text-2xl font-black">Final Offer Temple</h1></div>
-                <p className="text-text-secondary text-sm">The golden summit. Complete all requirements to unlock your career destiny.</p>
+        <div className="space-y-10 pb-16">
+            {/* Header with Royal Banner */}
+            <div className="text-center relative py-12">
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-sunlight/20 rounded-full blur-[100px]"></div>
+                    <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-sunlight/30"></div>
+                </div>
+                <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="relative z-10">
+                    <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/5 border-2 border-sunlight shadow-xl shadow-gold/20 mb-6 group">
+                        <Crown size={24} className="text-gold group-hover:scale-120 transition-transform" />
+                        <span className="text-xs font-black text-gold tracking-[0.3em] uppercase italic">The Summit of Destiny</span>
+                    </div>
+                    <h1 className="text-5xl md:text-6xl font-black text-white drop-shadow-sm">Final Offer Temple</h1>
+                    <p className="text-text-secondary font-bold mt-4 max-w-2xl mx-auto italic">Only the worthy adventurers who have conquered the trails across the islands may enter the sacred grounds of the ultimate career offer.</p>
+                </motion.div>
             </div>
 
-            {/* Gate status */}
-            <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-                className={`glass-card text-center ${allReady ? 'zone-complete' : ''}`}
+            <div className="grid lg:grid-cols-3 gap-8">
+
+                {/* Readiness Gate */}
+                <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="glass-card border-sunlight/40 relative overflow-hidden flex flex-col">
+                    <div className="absolute top-0 right-0 p-8 rotate-12 opacity-5 text-7xl">🏛</div>
+                    <h3 className="text-xl font-black text-white mb-8 flex items-center gap-3">
+                        <Shield size={24} className="text-gold" /> Readiness Gate
+                    </h3>
+                    <div className="space-y-4 flex-1">
+                        {requirements.map((r, i) => (
+                            <div key={i} className={`p-4 rounded-2xl border-2 flex items-center justify-between transition-all ${r.done ? 'border-grass/20 bg-grass/5' : 'border-white/10 bg-slate-50 opacity-60'}`}>
+                                <span className="text-sm font-bold text-white">{r.label}</span>
+                                {r.done ? <CheckCircle2 size={18} className="text-grass" /> : <Shield size={18} className="text-white/40" />}
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="mt-8 pt-8 border-t border-white/10">
+                        <div className="flex justify-between items-center mb-2 px-1">
+                            <span className="text-[10px] font-black text-text-muted uppercase tracking-widest leading-none">Overall Seal</span>
+                            <span className="text-xs font-black text-white leading-none">75% UNLOCKED</span>
+                        </div>
+                        <div className="h-3 bg-white/10 rounded-full overflow-hidden border border-white shadow-none">
+                            <div className="h-full bg-gradient-to-r from-grass to-gold w-[75%] rounded-full shadow-[0_0_10px_rgba(34,197,94,0.3)]"></div>
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* Skill Radar / Stats */}
+                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="glass-card border-white/10 lg:col-span-2 relative overflow-hidden">
+                    <div className="absolute top-[-50px] right-[-50px] w-80 h-80 bg-sky/5 rounded-full blur-3xl"></div>
+                    <h3 className="text-xl font-black text-white mb-8 flex items-center gap-3">
+                        <TrendingUp size={24} className="text-sky" /> Career Potential Radar
+                    </h3>
+
+                    <div className="grid md:grid-cols-2 gap-10">
+                        <div className="space-y-6">
+                            {skills.map((s, i) => (
+                                <div key={i} className="space-y-2">
+                                    <div className="flex justify-between items-center px-1">
+                                        <span className="text-xs font-black text-text-secondary uppercase tracking-widest">{s.name}</span>
+                                        <span className="text-xs font-black text-white">{s.val}%</span>
+                                    </div>
+                                    <div className="h-3 bg-white/5 rounded-full overflow-hidden p-[1px] border border-white">
+                                        <motion.div initial={{ width: 0 }} animate={{ width: `${s.val}%` }} transition={{ duration: 1, delay: i * 0.1 }}
+                                            className={`h-full ${s.color} rounded-full relative`}
+                                        >
+                                            <div className="absolute inset-0 bg-white/20 animate-water opacity-20"></div>
+                                        </motion.div>
+                                    </div>
+                                </div>
+                            ))}
+                            <div className="pt-6">
+                                <button className="btn-ghost w-full py-4 text-sm flex items-center justify-center gap-3 border-sky/20 hover:bg-sky/10">
+                                    <Sparkles size={18} className="text-sky" /> Generate Full Spirit Scroll
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="bg-white/5 rounded-[2.5rem] border-2 border-white p-8 flex flex-col justify-center text-center relative group overflow-hidden">
+                            <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/graphy-very-light.png')]"></div>
+                            <div className="text-[10px] font-black text-grass uppercase tracking-[0.2em] mb-4">Expedition Status</div>
+                            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gold to-sunlight mx-auto mb-6 flex items-center justify-center shadow-xl shadow-gold/20 rotate-12 group-hover:rotate-0 transition-transform">
+                                <Trophy size={48} className="text-gold" />
+                            </div>
+                            <h4 className="text-2xl font-black text-white mb-2">Offer Hunter</h4>
+                            <p className="text-[10px] font-black text-text-muted uppercase tracking-widest mb-6">Master Class Adventurer</p>
+                            <Link to="/profile" className="text-xs font-black text-sky hover:text-sky flex items-center justify-center gap-2 hover:underline">
+                                View Achievement Hall <ArrowRight size={14} />
+                            </Link>
+                        </div>
+                    </div>
+                </motion.div>
+
+            </div>
+
+            {/* The Final Gate CTA */}
+            <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }}
+                className="glass-card bg-gradient-to-r from-forest to-grass text-white py-12 px-10 text-center relative overflow-hidden"
             >
-                <div className="text-5xl mb-4">{allReady ? '🏆' : '🔒'}</div>
-                <h2 className="text-2xl font-black mb-2">{allReady ? 'Temple Unlocked!' : 'Gate Sealed'}</h2>
-                <p className="text-text-secondary text-sm mb-6">{allReady ? 'You have proven yourself worthy.' : 'Meet all requirements to enter.'}</p>
-
-                <div className="grid grid-cols-3 gap-4 max-w-md mx-auto mb-6">
-                    {[
-                        { label: 'Skill Score ≥ 70%', met: skillsReady, value: `${readiness}%`, icon: Target },
-                        { label: 'Mock Score ≥ 70%', met: mockReady, value: `${confidence}%`, icon: Shield },
-                        { label: '5+ Day Streak', met: streakReady, value: '5 Days', icon: Zap },
-                    ].map((r, i) => (
-                        <div key={i} className={`p-4 rounded-xl border ${r.met ? 'border-emerald/30 bg-emerald/5' : 'border-coral/30 bg-coral/5'}`}>
-                            <r.icon size={20} className={`mx-auto mb-2 ${r.met ? 'text-emerald' : 'text-coral'}`} />
-                            <div className={`text-lg font-black ${r.met ? 'text-emerald' : 'text-coral'}`}>{r.value}</div>
-                            <div className="text-[10px] text-text-muted font-medium mt-1">{r.label}</div>
-                            {r.met ? <CheckCircle2 size={14} className="text-emerald mx-auto mt-2" /> : <Lock size={14} className="text-coral mx-auto mt-2" />}
-                        </div>
-                    ))}
-                </div>
-            </motion.div>
-
-            <div className="grid lg:grid-cols-2 gap-6">
-                {/* Readiness Score */}
-                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="glass-card flex flex-col items-center">
-                    <h3 className="font-bold text-lg mb-6">Offer Readiness</h3>
-                    <div className="relative w-36 h-36 mb-4">
-                        <svg viewBox="0 0 100 100" className="transform -rotate-90">
-                            <circle cx="50" cy="50" r="42" fill="none" stroke="#1E293B" strokeWidth="8" />
-                            <motion.circle cx="50" cy="50" r="42" fill="none" stroke="#FBBF24" strokeWidth="8" strokeLinecap="round"
-                                initial={{ strokeDashoffset: 264 }} animate={{ strokeDashoffset: 264 - (264 * readiness) / 100 }}
-                                transition={{ duration: 1.5, delay: 0.5 }} strokeDasharray="264" />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-3xl font-black text-gold">{readiness}%</span>
-                        </div>
+                <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] animate-pulse"></div>
+                <div className="relative z-10 max-w-2xl mx-auto">
+                    <h2 className="text-3xl font-black mb-4">Unlock the Royal Offer Hall</h2>
+                    <p className="text-white/80 font-bold italic mb-10 leading-relaxed">Prepare your heart. The Final Interview Boss awaits in the Hall of Honor. Complete the Dungeon Runes to unlock your ultimate destiny.</p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button className="btn-secondary px-12 py-5 text-xl flex items-center gap-3 opacity-50 cursor-not-allowed">
+                            <Shield size={24} /> Seal Restricted
+                        </button>
+                        <Link to="/code-dungeon" className="btn-ghost bg-white/10 border-white/30 text-white px-10 py-5 text-lg hover:bg-white/20">
+                            Enter Code Dungeon <ArrowRight size={18} />
+                        </Link>
                     </div>
-                    <p className="text-xs text-text-muted">Overall career readiness</p>
-                </motion.div>
-
-                {/* Confidence */}
-                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} className="glass-card flex flex-col items-center">
-                    <h3 className="font-bold text-lg mb-6">Confidence Score</h3>
-                    <div className="relative w-36 h-36 mb-4">
-                        <svg viewBox="0 0 100 100" className="transform -rotate-90">
-                            <circle cx="50" cy="50" r="42" fill="none" stroke="#1E293B" strokeWidth="8" />
-                            <motion.circle cx="50" cy="50" r="42" fill="none" stroke="#8B5CF6" strokeWidth="8" strokeLinecap="round"
-                                initial={{ strokeDashoffset: 264 }} animate={{ strokeDashoffset: 264 - (264 * confidence) / 100 }}
-                                transition={{ duration: 1.5, delay: 0.5 }} strokeDasharray="264" />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-3xl font-black text-purple">{confidence}%</span>
-                        </div>
-                    </div>
-                    <p className="text-xs text-text-muted">AI-assessed interview confidence</p>
-                </motion.div>
-            </div>
-
-            {/* Skill Radar (bars) */}
-            <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }} className="glass-card">
-                <h3 className="font-bold text-lg mb-5">Skill Radar</h3>
-                <div className="space-y-4">
-                    {skills.map((s, i) => (
-                        <div key={i}>
-                            <div className="flex justify-between text-sm mb-1">
-                                <span className="font-semibold">{s.name}</span>
-                                <span className="text-text-muted font-bold">{s.score}%</span>
-                            </div>
-                            <div className="w-full bg-navy h-2.5 rounded-full overflow-hidden">
-                                <motion.div initial={{ width: 0 }} animate={{ width: `${s.score}%` }} transition={{ duration: 1, delay: 0.3 + i * 0.1 }}
-                                    className={`h-full rounded-full ${s.score >= 70 ? 'bg-gradient-to-r from-emerald to-teal-400' : s.score >= 40 ? 'bg-gradient-to-r from-gold to-amber' : 'bg-gradient-to-r from-coral to-red-400'}`}
-                                />
-                            </div>
-                        </div>
-                    ))}
                 </div>
-            </motion.div>
-
-            {/* Career Rank */}
-            <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }} className="glass-card text-center">
-                <Crown size={32} className="text-gold mx-auto mb-3" />
-                <h3 className="text-xl font-black text-gold mb-1">Elite Candidate</h3>
-                <p className="text-sm text-text-secondary">Level 8 • 2,450 XP • 5 Day Streak</p>
             </motion.div>
         </div>
     );
