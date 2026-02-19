@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Sparkles, Zap, Star, Shield, Smartphone } from 'lucide-react';
+import { useUser } from '../context/UserContext';
 
 const items = [
     {
