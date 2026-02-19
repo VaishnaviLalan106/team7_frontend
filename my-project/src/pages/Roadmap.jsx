@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, ChevronDown, ChevronRight, Play, ExternalLink, FileText, MessageSquare, CheckCircle2, Circle, Sparkles, Zap, Target, Hammer, Clock, Youtube, Globe, Code2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { BookOpen, ChevronDown, ChevronRight, Play, ExternalLink, FileText, MessageSquare, CheckCircle2, Circle, Sparkles, Zap, Target, Hammer, Clock, Youtube, Globe, Code2, ArrowRight } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 import { generateRoadmap } from '../services/apiService';
+import { useUser } from '../context/UserContext';
 
 const ResourceBadge = ({ type }) => {
     const styles = {
@@ -208,18 +209,45 @@ const WeekAccordion = ({ week, weekData, completedTopics, toggleTopic, navigate 
 
 const Roadmap = () => {
     const navigate = useNavigate();
+    const { user } = useUser();
     const [roadmap, setRoadmap] = useState(null);
     const [completedTopics, setCompletedTopics] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const load = async () => {
-            const data = await generateRoadmap([]);
-            setRoadmap(data);
+            if (user.hasCompletedOnboarding) {
+                const data = await generateRoadmap([]);
+                setRoadmap(data);
+            }
             setLoading(false);
         };
         load();
-    }, []);
+    }, [user.hasCompletedOnboarding]);
+
+    if (!user.hasCompletedOnboarding) {
+        return (
+            <div className="min-h-[70vh] flex items-center justify-center">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="max-w-md w-full glass-card p-10 text-center relative overflow-hidden"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-emerald-500/5 pointer-events-none"></div>
+                    <div className="w-20 h-20 bg-emerald-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                        <Sparkles size={40} className="text-emerald-400" />
+                    </div>
+                    <h2 className="text-2xl font-black text-white mb-3">Roadmap Concealed</h2>
+                    <p className="text-sm text-text-secondary mb-8 leading-relaxed">
+                        Nova AI needs to analyze your skills and target JD before it can chart your personalized learning path.
+                    </p>
+                    <Link to="/resume-island" className="btn-primary w-full py-4 bg-emerald-500 hover:bg-emerald-600 flex items-center justify-center gap-2">
+                        <ArrowRight size={18} /> Get Started at Resume Island
+                    </Link>
+                </motion.div>
+            </div>
+        );
+    }
 
     const toggleTopic = (key) => {
         setCompletedTopics(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
@@ -283,7 +311,7 @@ const Roadmap = () => {
 
             {/* Weeks */}
             <div className="space-y-4">
-                {roadmap.weeks.map((weekData) => (
+                {roadmap && roadmap.weeks && roadmap.weeks.map((weekData) => (
                     <WeekAccordion key={weekData.week} week={weekData.week} weekData={weekData}
                         completedTopics={completedTopics} toggleTopic={toggleTopic} navigate={navigate}
                     />

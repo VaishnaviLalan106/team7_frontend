@@ -4,15 +4,16 @@ import { Compass, Flame, Shield, Zap, Sparkles, ChevronRight, Trophy } from 'luc
 import { Link } from 'react-router-dom';
 
 const XPBar = () => {
+    const { user } = useUser();
     const stats = {
-        level: 8,
-        xp: 2450,
-        nextXp: 3000,
-        streak: 5,
-        rank: 'Elite Adventurer'
+        level: user.level || 1,
+        xp: user.xp || 0,
+        nextXp: 1000, // Assuming static 1000 XP per level for simple math
+        streak: user.streak || 0,
+        rank: user.title || 'Newbie Navigator'
     };
 
-    const progress = (stats.xp / stats.nextXp) * 100;
+    const progress = (stats.xp % stats.nextXp) / (stats.nextXp / 100);
 
     return (
         <div className="flex items-center gap-4 lg:gap-6 bg-white/5 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10">

@@ -324,23 +324,21 @@ const getDemoChatReply = (message) => {
 };
 
 const getDemoAnalytics = () => ({
-    totalTests: 24,
-    avgScore: 78,
-    streak: 5,
-    testsThisWeek: 4,
+    totalTests: 0,
+    avgScore: 0,
+    streak: 0,
+    testsThisWeek: 0,
     scoreBreakdown: [
-        { type: 'MCQ', score: 82, total: 15 },
-        { type: 'Coding', score: 71, total: 6 },
-        { type: 'Behavioral', score: 85, total: 3 },
+        { type: 'MCQ', score: 0, total: 0 },
+        { type: 'Coding', score: 0, total: 0 },
+        { type: 'Behavioral', score: 0, total: 0 },
     ],
-    weakAreas: ['System Design', 'Dynamic Programming', 'SQL Queries'],
-    revisionTopics: ['TypeScript Generics', 'REST API Design', 'React Performance'],
+    weakAreas: [],
+    revisionTopics: [],
     performanceTrend: [
-        { date: 'Week 1', score: 55 },
-        { date: 'Week 2', score: 62 },
-        { date: 'Week 3', score: 68 },
-        { date: 'Week 4', score: 74 },
-        { date: 'Week 5', score: 78 },
-        { date: 'Week 6', score: 82 },
+        { date: 'Week 1', score: 0 },
+        { date: 'Week 2', score: 0 },
+        { date: 'Week 3', score: 0 },
+        { date: 'Week 4', score: 0 },
     ],
 });

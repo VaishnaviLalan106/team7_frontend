@@ -1,34 +1,78 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 import {
     TrendingUp, Award, Clock, Zap, Target,
     BarChart3, Activity, Star, Calendar, ArrowUpRight,
     Map, ScrollText, BookOpen, Users, Code2, Globe, Sparkles,
-    AlertTriangle, RefreshCw, Brain
+    AlertTriangle, RefreshCw, Brain, Lock
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, LineChart, Line, BarChart, Bar } from 'recharts';
 import { getAnalytics } from '../services/apiService';
 
-const xpData = [
-    { name: 'Mon', xp: 400 }, { name: 'Tue', xp: 700 }, { name: 'Wed', xp: 1200 },
-    { name: 'Thu', xp: 900 }, { name: 'Fri', xp: 1500 }, { name: 'Sat', xp: 1800 },
-    { name: 'Sun', xp: 2100 },
+// Initial empty states for charts
+const initialXpData = [
+    { name: 'Mon', xp: 0 }, { name: 'Tue', xp: 0 }, { name: 'Wed', xp: 0 },
+    { name: 'Thu', xp: 0 }, { name: 'Fri', xp: 0 }, { name: 'Sat', xp: 0 },
+    { name: 'Sun', xp: 0 },
 ];
 
-const skillData = [
-    { subject: 'Technical', A: 120, fullMark: 150 },
-    { subject: 'Logic', A: 98, fullMark: 150 },
-    { subject: 'Design', A: 86, fullMark: 150 },
-    { subject: 'Speed', A: 99, fullMark: 150 },
-    { subject: 'Soft Skills', A: 85, fullMark: 150 },
+const initialSkillData = [
+    { subject: 'Technical', A: 0, fullMark: 150 },
+    { subject: 'Logic', A: 0, fullMark: 150 },
+    { subject: 'Design', A: 0, fullMark: 150 },
+    { subject: 'Speed', A: 0, fullMark: 150 },
+    { subject: 'Soft Skills', A: 0, fullMark: 150 },
 ];
 
 const Dashboard = () => {
+    const { user } = useUser();
     const [analytics, setAnalytics] = useState(null);
 
     useEffect(() => {
-        getAnalytics().then(setAnalytics);
-    }, []);
+        if (user.hasCompletedOnboarding) {
+            getAnalytics().then(setAnalytics).catch(() => {
+                // Handle case where analytics might fail or be empty
+                setAnalytics(null);
+            });
+        }
+    }, [user.hasCompletedOnboarding]);
+
+    const chartData = analytics?.performanceTrend?.map(p => ({
+        name: p.date.split(' ')[1] || p.date,
+        xp: p.score * 20 // Mocking some XP relation for visual
+    })) || initialXpData;
+
+    const currentSkillData = analytics?.scoreBreakdown?.map(s => ({
+        subject: s.type,
+        A: s.score,
+        fullMark: 100
+    })) || initialSkillData;
+
+    if (!user.hasCompletedOnboarding) {
+        return (
+            <div className="min-h-[70vh] flex items-center justify-center">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="max-w-md w-full glass-card p-10 text-center relative overflow-hidden"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-emerald-500/5 pointer-events-none"></div>
+                    <div className="w-20 h-20 bg-gold/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                        <Lock size={40} className="text-gold" />
+                    </div>
+                    <h2 className="text-2xl font-black text-white mb-3">Expedition Locked</h2>
+                    <p className="text-sm text-text-secondary mb-8 leading-relaxed">
+                        To unveil your analytics and track your progress, you must first forge your <span className="text-gold italic">Clarity Scroll</span> in Resume Island.
+                    </p>
+                    <Link to="/resume-island" className="btn-primary w-full py-4 flex items-center justify-center gap-2">
+                        <ScrollText size={18} /> Visit Resume Island
+                    </Link>
+                </motion.div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8 pb-12">
@@ -47,10 +91,10 @@ const Dashboard = () => {
             {/* Quick Metrics */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {[
-                    { label: 'Total XP', val: '12,450', change: '+2.4k', icon: Zap, color: 'text-gold', bg: 'bg-gold/10' },
-                    { label: 'Tests Taken', val: analytics?.totalTests || '24', change: `Avg ${analytics?.avgScore || 78}%`, icon: Target, color: 'text-grass', bg: 'bg-grass/10' },
-                    { label: 'Active Streak', val: `${analytics?.streak || 5} Days`, change: 'On Fire', icon: Activity, color: 'text-rose', bg: 'bg-rose/10' },
-                    { label: 'This Week', val: analytics?.testsThisWeek || '4', change: 'Tests', icon: Brain, color: 'text-sky', bg: 'bg-sky/10' },
+                    { label: 'Total XP', val: user.xp.toLocaleString() || '0', change: '+0', icon: Zap, color: 'text-gold', bg: 'bg-gold/10' },
+                    { label: 'Tests Taken', val: analytics?.totalTests || '0', change: `Avg ${analytics?.avgScore || 0}%`, icon: Target, color: 'text-grass', bg: 'bg-grass/10' },
+                    { label: 'Active Streak', val: `${user.streak || 0} Days`, change: 'On Fire', icon: Activity, color: 'text-rose', bg: 'bg-rose/10' },
+                    { label: 'This Week', val: analytics?.testsThisWeek || '0', change: 'Tests', icon: Brain, color: 'text-sky', bg: 'bg-sky/10' },
                 ].map((m, i) => (
                     <motion.div key={i} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.1 }}
                         className="glass-card flex flex-col items-center justify-center p-6 text-center"
@@ -84,7 +128,7 @@ const Dashboard = () => {
                     </div>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={xpData}>
+                            <AreaChart data={chartData}>
                                 <defs>
                                     <linearGradient id="colorXp" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#22C55E" stopOpacity={0.3} />
@@ -93,7 +137,7 @@ const Dashboard = () => {
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
                                 <XAxis dataKey="name" stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} />
-                                <YAxis stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => `${v / 1000}k`} />
+                                <YAxis stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}`} />
                                 <Tooltip contentStyle={{ background: 'rgba(30, 41, 59, 0.95)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', color: '#F1F5F9', fontSize: '12px', fontWeight: 'bold' }} />
                                 <Area type="monotone" dataKey="xp" stroke="#22C55E" strokeWidth={3} fillOpacity={1} fill="url(#colorXp)" />
                             </AreaChart>
@@ -112,7 +156,7 @@ const Dashboard = () => {
                     </div>
                     <div className="h-[280px] w-full flex items-center justify-center">
                         <ResponsiveContainer width="100%" height="100%">
-                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={skillData}>
+                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={currentSkillData}>
                                 <PolarGrid stroke="rgba(255,255,255,0.1)" />
                                 <PolarAngleAxis dataKey="subject" tick={{ fill: '#94A3B8', fontSize: 10, fontWeight: 'bold' }} />
                                 <Radar name="Skills" dataKey="A" stroke="#22C55E" strokeWidth={3} fill="#22C55E" fillOpacity={0.3} />
@@ -228,25 +272,27 @@ const Dashboard = () => {
                         <button className="text-[10px] font-black text-gold uppercase tracking-widest hover:underline">View All</button>
                     </div>
                     <div className="space-y-6">
-                        {[
-                            { action: 'Slayed People Dragon', zone: 'Interview Arena', time: '2h ago', xp: 400, icon: <Users size={16} />, color: 'bg-rose text-white' },
-                            { action: 'Forged Clarity Scroll', zone: 'Resume Island', time: '5h ago', xp: 200, icon: <ScrollText size={16} />, color: 'bg-grass text-white' },
-                            { action: 'Gathered Concept Shard', zone: 'Concept Caverns', time: 'Yesterday', xp: 300, icon: <BookOpen size={16} />, color: 'bg-sky text-white' },
-                            { action: 'Deciphered Login Rune', zone: 'Code Dungeon', time: '2 days ago', xp: 150, icon: <Code2 size={16} />, color: 'bg-amber text-white' },
-                        ].map((log, i) => (
-                            <div key={i} className="flex items-center gap-4 group">
-                                <div className={`w-10 h-10 rounded-2xl ${log.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                                    {log.icon}
+                        {analytics?.recentLogs?.length > 0 ? (
+                            analytics.recentLogs.map((log, i) => (
+                                <div key={i} className="flex items-center gap-4 group">
+                                    <div className={`w-10 h-10 rounded-2xl ${log.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                                        {log.icon}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="text-sm font-black text-white leading-tight truncate">{log.action}</h4>
+                                        <p className="text-[10px] font-black text-grass uppercase tracking-tighter mt-0.5">{log.zone} • <span className="text-text-muted">{log.time}</span></p>
+                                    </div>
+                                    <div className="text-right">
+                                        <span className="text-[11px] font-black text-gold bg-gold/10 border border-gold/20 px-2 py-1 rounded-lg">+{log.xp} XP</span>
+                                    </div>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <h4 className="text-sm font-black text-white leading-tight truncate">{log.action}</h4>
-                                    <p className="text-[10px] font-black text-grass uppercase tracking-tighter mt-0.5">{log.zone} • <span className="text-text-muted">{log.time}</span></p>
-                                </div>
-                                <div className="text-right">
-                                    <span className="text-[11px] font-black text-gold bg-gold/10 border border-gold/20 px-2 py-1 rounded-lg">+{log.xp} XP</span>
-                                </div>
+                            ))
+                        ) : (
+                            <div className="py-8 text-center">
+                                <p className="text-xs font-bold text-text-muted italic">"A thousand mile journey starts with a single step..."</p>
+                                <p className="text-[10px] text-text-muted/50 mt-1 uppercase tracking-widest">Awaiting First Combat</p>
                             </div>
-                        ))}
+                        )}
                     </div>
                 </motion.div>
 
@@ -261,12 +307,7 @@ const Dashboard = () => {
                         <button className="text-[10px] font-black text-gold uppercase tracking-widest hover:underline">Exchanges</button>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        {[
-                            { name: 'Scroll Forge', desc: 'Resume Hero', icon: '📜', color: 'bg-grass/10' },
-                            { name: 'Crystal Eye', desc: 'Concept Master', icon: '💎', color: 'bg-sky/10' },
-                            { name: 'Dragon Bane', desc: 'Mock Slayer', icon: '🐉', color: 'bg-rose/10' },
-                            { name: 'Rune King', desc: 'Code Master', icon: '🧩', color: 'bg-gold/10' },
-                        ].map((badge, i) => (
+                        {(user.achievements || []).map((badge, i) => (
                             <div key={i} className="p-5 rounded-3xl border border-white/10 flex items-center gap-4 hover:border-gold/30 hover:bg-white/5 transition-all group">
                                 <div className="text-3xl group-hover:scale-110 transition-transform">{badge.icon}</div>
                                 <div className="text-left">
@@ -275,6 +316,11 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         ))}
+                        {(user.achievements || []).length === 0 && (
+                            <div className="col-span-2 py-4 text-center border-2 border-dashed border-white/5 rounded-3xl">
+                                <p className="text-[10px] font-black text-text-muted uppercase tracking-widest">No Medals Earned Yet</p>
+                            </div>
+                        )}
                     </div>
                     <div className="mt-10 p-4 bg-gold/10 border-2 border-gold/20 rounded-2xl flex items-center justify-center gap-4 text-gold font-black text-sm">
                         <Sparkles size={20} className="animate-pulse" /> Complete FAANG Fortress to unlock the Elite Hall

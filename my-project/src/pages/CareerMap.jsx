@@ -7,31 +7,31 @@ import { useUser } from '../context/UserContext';
 const zones = [
     {
         id: 'resume', name: 'Resume Island', subtitle: 'Forge your clarity scroll',
-        path: '/resume-island', progress: 85, unlocked: true, completed: false,
+        path: '/resume-island', progress: 0, unlocked: true, completed: false,
         gradient: 'from-emerald-400 to-green-600', xp: 200,
         icon: '📜', accent: '#22C55E',
     },
     {
         id: 'roadmap', name: 'Learning Roadmap', subtitle: 'Chart your learning journey',
-        path: '/roadmap', progress: 40, unlocked: true, completed: false,
+        path: '/roadmap', progress: 0, unlocked: true, completed: false,
         gradient: 'from-teal-400 to-cyan-600', xp: 250,
         icon: '📚', accent: '#2DD4BF',
     },
     {
         id: 'concept', name: 'Concept Caverns', subtitle: 'Master the crystal chambers',
-        path: '/concept-caverns', progress: 60, unlocked: true, completed: false,
+        path: '/concept-caverns', progress: 0, unlocked: true, completed: false,
         gradient: 'from-sky-400 to-blue-600', xp: 300,
         icon: '💎', accent: '#38BDF8',
     },
     {
         id: 'arena', name: 'Interview Arena', subtitle: 'Battle the stone colosseum',
-        path: '/interview-arena', progress: 30, unlocked: true, completed: false,
+        path: '/interview-arena', progress: 0, unlocked: true, completed: false,
         gradient: 'from-rose-400 to-pink-600', xp: 400,
         icon: '⚔️', accent: '#FB7185',
     },
     {
         id: 'dungeon', name: 'Code Dungeon', subtitle: 'Decode the ancient runes',
-        path: '/code-dungeon', progress: 15, unlocked: true, completed: false,
+        path: '/code-dungeon', progress: 0, unlocked: true, completed: false,
         gradient: 'from-amber-400 to-orange-600', xp: 350,
         icon: '🧩', accent: '#FBBF24',
     },
@@ -266,7 +266,16 @@ const QuestModal = ({ onClose }) => (
 
 /* ── Main Component ── */
 const CareerMap = () => {
+    const { user } = useUser();
     const [showQuest, setShowQuest] = useState(false);
+
+    // Adjust zones based on onboarding status
+    const activeZones = zones.map(z => {
+        if (!user.hasCompletedOnboarding && z.id !== 'resume') {
+            return { ...z, unlocked: false, progress: 0 };
+        }
+        return z;
+    });
 
     return (
         <div className="min-h-[calc(100vh-4rem)] relative bg-navy-deep">
@@ -275,6 +284,11 @@ const CareerMap = () => {
             <div className="relative z-10 max-w-4xl mx-auto py-10 px-4">
                 {/* Header */}
                 <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-center mb-12">
+                    {!user.hasCompletedOnboarding && (
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gold/10 border border-gold/20 mb-6 animate-bounce">
+                            <span className="text-xs font-black text-gold uppercase tracking-widest">⚠️ First Step: Visit Resume Island</span>
+                        </div>
+                    )}
                     <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-3">
                         <Sparkles size={14} className="text-gold animate-pulse" />
                         <span className="text-[10px] font-bold text-gold/80 tracking-widest uppercase">Career Expedition</span>
@@ -289,11 +303,11 @@ const CareerMap = () => {
                 <div className="relative">
                     <ExplorerAvatar />
 
-                    {zones.map((zone, i) => (
+                    {activeZones.map((zone, i) => (
                         <div key={zone.id}>
                             <IslandNode zone={zone} index={i} />
-                            {i < zones.length - 1 && (
-                                <WindingPath index={i} accent={zones[i + 1].accent} progress={zone.progress} />
+                            {i < activeZones.length - 1 && (
+                                <WindingPath index={i} accent={activeZones[i + 1].accent} progress={zone.progress} />
                             )}
                         </div>
                     ))}

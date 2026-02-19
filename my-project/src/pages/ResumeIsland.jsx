@@ -3,9 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileText, Briefcase, Sparkles, CheckCircle2, AlertCircle, ArrowRight, Loader2, X, Zap, Target, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { analyzeResume } from '../services/apiService';
+import { useUser } from '../context/UserContext';
 
 const ResumeIsland = () => {
     const navigate = useNavigate();
+    const { completeOnboarding, grantAchievement } = useUser();
     const fileRef = useRef(null);
     const [step, setStep] = useState('upload'); // upload | analyzing | results
     const [resumeFile, setResumeFile] = useState(null);
@@ -29,6 +31,16 @@ const ResumeIsland = () => {
         try {
             const result = await analyzeResume(resumeFile, jobDescription);
             setAnalysis(result);
+
+            // Mark onboarding as complete and grant achievement
+            completeOnboarding();
+            grantAchievement({
+                id: 'clarity_scroll',
+                name: 'Clarity Scroll Forged',
+                desc: 'Analyzed your first target job',
+                icon: '📜'
+            });
+
             setTimeout(() => setStep('results'), 2000);
         } catch (err) {
             setStep('results');

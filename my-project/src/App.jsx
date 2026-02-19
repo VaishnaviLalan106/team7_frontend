@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children }) => {
   const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/signup" state={{ from: location }} replace />;
   }
 
   return children;
@@ -42,7 +42,7 @@ const PublicRoute = ({ children }) => {
 // Handle Landing page vs World Map logic
 const InitialLanding = () => {
   const { isAuthenticated } = useUser();
-  return isAuthenticated ? <CareerMap /> : <Navigate to="/login" replace />;
+  return isAuthenticated ? <CareerMap /> : <Navigate to="/signup" replace />;
 };
 
 function App() {

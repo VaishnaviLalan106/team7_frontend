@@ -16,7 +16,13 @@ const funNameSuggestions = [
 const defaultUser = {
     avatar: '🦊',
     displayName: 'Adventurer',
-    title: 'Elite Explorer',
+    title: 'Newbie Navigator',
+    level: 1,
+    xp: 0,
+    islandsExplored: 0,
+    combatHistory: [],
+    hasCompletedOnboarding: false,
+    achievements: [],
 };
 
 const UserContext = createContext();
@@ -40,7 +46,21 @@ export const UserProvider = ({ children }) => {
     }, [user]);
 
     const login = (userData) => {
-        if (userData) setUser(userData);
+        let finalUser = { ...defaultUser, ...userData };
+
+        // Grant first achievement if new user
+        if (!finalUser.achievements?.find(a => a.id === 'welcome_aboard')) {
+            const welcomeBadge = {
+                id: 'welcome_aboard',
+                name: 'Welcome Aboard',
+                desc: 'Joined the Quest',
+                icon: '❤️',
+                date: new Date().toLocaleDateString()
+            };
+            finalUser.achievements = [...(finalUser.achievements || []), welcomeBadge];
+        }
+
+        setUser(finalUser);
         setIsAuthenticated(true);
         localStorage.setItem('prepnova_auth', 'true');
     };
@@ -54,10 +74,25 @@ export const UserProvider = ({ children }) => {
     const updateName = (displayName) => setUser(prev => ({ ...prev, displayName }));
     const updateTitle = (title) => setUser(prev => ({ ...prev, title }));
 
+    const completeOnboarding = () => {
+        setUser(prev => ({ ...prev, hasCompletedOnboarding: true }));
+    };
+
+    const grantAchievement = (achievement) => {
+        setUser(prev => {
+            if (prev.achievements?.find(a => a.id === achievement.id)) return prev;
+            return {
+                ...prev,
+                achievements: [...(prev.achievements || []), { ...achievement, date: new Date().toLocaleDateString() }]
+            };
+        });
+    };
+
     return (
         <UserContext.Provider value={{
             user, isAuthenticated, login, logout,
             updateAvatar, updateName, updateTitle,
+            completeOnboarding, grantAchievement,
             avatarOptions, funNameSuggestions
         }}>
             {children}
